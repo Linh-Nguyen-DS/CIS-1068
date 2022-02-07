@@ -8,6 +8,8 @@ package grades;
 // Import Scanner package
 import java.util.Scanner;
 
+import java.util.Arrays;
+
 public class Grades {
 
 	public static void main(String[] args) {
@@ -28,6 +30,7 @@ public class Grades {
 		
 		System.out.printf("Using weights of: %n%d for Homework %n%d for Exam 1 %n%d for Exam 2 %n", hw_weight, exam1_weight, exam2_weight);
 		
+		
 		// Homework
 		System.out.println("\nHomework: ");
 	
@@ -46,13 +49,14 @@ public class Grades {
 		// Calculate
 		int max_hw_score = number_of_asm * (10 + 4); // 10 per assignment and 4 per lab and assignments = labs
 		
-		double hw_score = homework(avg_hw_grade, labs_attended, late_days, number_of_asm); // Assign return values
+		double hw_total = homework(avg_hw_grade, labs_attended, late_days, number_of_asm); // Assign return values
 		
-		System.out.printf("Total points = %.2f / %d %n", hw_score, max_hw_score);
+		System.out.printf("Total points = %.2f / %d %n", hw_total, max_hw_score);
 		
-		double hw_weighted = hw_weight * hw_score / max_hw_score;
+		double hw_weighted = hw_weight * hw_total / max_hw_score;
 		
 		System.out.printf("Weighted score = %.2f %n", hw_weighted);
+		
 		
 		// Exam 1
 		System.out.println("\nExam 1: ");
@@ -60,59 +64,34 @@ public class Grades {
 		System.out.print("Score? ");
 		double exam1_score = grab.nextDouble();
 		
-		if (exam1_score <= 0) {
-			exam1_score = 0;
-		} else if (exam1_score > 100) {
-			exam1_score = 100;
-		}
-		
 		System.out.print("Curve? ");
 		final double curve1 = grab.nextDouble();
 		
-		double exam1_curved = exam1_score + curve1;
+		// Return array with exam 1 scores after curved and weighted
+		double[] score1 = exam1(exam1_score, curve1, exam1_weight);
 		
-		if (exam1_curved > 100) {
-			exam1_curved = 100;
-		} else if (exam1_curved <= 0) {
-			exam1_curved = 0;
-		}
+		System.out.printf("Total points = %.2f / 100 %n", score1[0]);
 		
-		double exam1_weighted = exam1(exam1_curved, exam1_weight); // Assign return values
+		System.out.printf("Weighted score = %.2f %n", score1[1]);
 		
-		System.out.printf("Total points = %.2f / 100 %n", exam1_curved);
-		
-		System.out.printf("Weighted score = %.2f %n", exam1_weighted);
 		
 		// Exam 2
 		System.out.println("\nExam 2: ");
 		System.out.print("Score? ");
 		double exam2_score = grab.nextDouble();
 		
-		if (exam2_score <= 0) {
-			exam2_score = 0;
-		} else if (exam2_score > 100) {
-			exam2_score = 100;
-		}
-		
 		System.out.print("Curve? ");
 		final double curve2 = grab.nextDouble();
 		
-		double exam2_curved = exam2_score + curve2;
+		// Return array with exam 2 scores after curved and weighted
+		double[] score2 = exam2(exam2_score, curve2, exam2_weight); 
 		
-		if (exam2_curved > 100) {
-			exam2_curved = 100;
-		} else if (exam2_curved <= 0) {
-			exam2_curved = 0;
-		}
+		System.out.printf("Total points = %.2f / 100 %n", score2[0]);
 		
-		double exam2_weighted = exam2(exam2_curved, exam2_weight); // Assign return values
-		
-		System.out.printf("Total points = %.2f / 100 %n", exam2_curved);
-		
-		System.out.printf("Weighted score = %.2f %n", exam2_weighted);
+		System.out.printf("Weighted score = %.2f %n", score2[1]);
 		
 		// Final average point
-		double course_grade = hw_weighted + exam1_weighted + exam2_weighted;
+		double course_grade = hw_weighted + score1[1] + score2[1];
 		
 		System.out.printf("%nCourse grade = %.2f", course_grade);
 	}
@@ -148,15 +127,51 @@ public class Grades {
 		return hw_total;
 	}
 	
-	// 2nd function
-	private static double exam1(double exam1_curved, int exam1_weight) {
+	// 2nd function - return 2 values as an array
+	private static double[] exam1(double exam1_score, double curve1, int exam1_weight) {
+		
+		double exam1_curved = exam1_score + curve1;
+		
+		if (exam1_score <= 0) {
+			exam1_score = 0;
+		} else if (exam1_score > 100) {
+			exam1_score = 100;
+		}
+		
+		if (exam1_curved > 100) {
+			exam1_curved = 100;
+		} else if (exam1_curved <= 0) {
+			exam1_curved = 0;
+		}
+		
 		double exam1_weighted = exam1_weight * exam1_curved / 100;
-		return exam1_weighted;
+		
+		double score1[] = new double[]{exam1_curved, exam1_weighted};
+		
+		return score1;
 	}
 	
-	// 3rd function
-	private static double exam2(double exam2_curved, int exam2_weight) {
+	// 3rd function - return 2 values as an array
+	private static double[] exam2(double exam2_score, double curve2, int exam2_weight) {
+		
+		double exam2_curved = exam2_score + curve2;
+		
+		if (exam2_score <= 0) {
+			exam2_score = 0;
+		} else if (exam2_score > 100) {
+			exam2_score = 100;
+		}
+
+		if (exam2_curved > 100) {
+			exam2_curved = 100;
+		} else if (exam2_curved <= 0) {
+			exam2_curved = 0;
+		}
+		
 		double exam2_weighted = exam2_weight * exam2_curved / 100;
-		return exam2_weighted;
+		
+		double score2[] = new double[]{exam2_curved, exam2_weighted};
+		
+		return score2;
 	}
 }
